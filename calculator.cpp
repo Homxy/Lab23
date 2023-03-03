@@ -1,9 +1,93 @@
 #include <windows.h>
+#include <stdio.h>
+
+HWND textfield,
+	button_Plus,
+	button_Minus,
+	button_Divide,
+	button_Mul,
+	Textbox1,
+	Textbox2;
+
+char szClassName[] =  "TextEntry";
+char text1[100];
+char text2[100];
+
 
 /* This is where all the input to the window goes to */
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
 	switch(Message) {
-		
+		case WM_CREATE:{
+			textfield = CreateWindow("STATIC",
+									"Plase input two numbers",
+									WS_VISIBLE|WS_CHILD,
+									20,10,200,25,
+									hwnd, NULL, NULL, NULL);
+			button_Plus = CreateWindow("BUTTON",
+									"+",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									50,110,30,30,
+									hwnd, (HMENU) 1, NULL, NULL);
+			button_Minus = CreateWindow("BUTTON",
+									"-",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									90,110,30,30,
+									hwnd, (HMENU) 2, NULL, NULL);
+			button_Mul = CreateWindow("BUTTON",
+									"*",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									130,110,30,30,
+									hwnd, (HMENU) 3, NULL, NULL);
+			button_Divide = CreateWindow("BUTTON",
+									"/",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									170,110,30,30,
+									hwnd, (HMENU) 4, NULL, NULL);
+			Textbox1 = CreateWindow("EDIT",
+									"",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									20,40,200,25,
+									hwnd, NULL, NULL, NULL);
+			Textbox2 = CreateWindow("EDIT",
+									"",
+									WS_VISIBLE | WS_CHILD | WS_BORDER,
+									20,70,200,25,
+									hwnd, NULL, NULL, NULL);						
+			break;
+		}
+		case WM_COMMAND: {
+				::MessageBeep(MB_ICONERROR);
+				double x=0,y=0,result=0;
+				char str[100];
+				x= GetWindowText(Textbox1, &text1[0],100);
+				y= GetWindowText(Textbox2, &text2[0],100);
+			switch(LOWORD(wParam)){
+				case 1:
+					result=atof(text1)+atof(text2);
+					sprintf(str, "%f", result);
+					::MessageBox(hwnd,str,"Result",MB_OK);
+					break;
+				case 2:
+					char str[100];
+					result=atof(text1)-atof(text2);
+					sprintf(str, "%f", result);
+					::MessageBox(hwnd,str,"Result",MB_OK);
+					break;
+				case 3:
+					result=atof(text1)*atof(text2);
+					sprintf(str, "%f", result);
+					::MessageBox(hwnd,str,"Result",MB_OK);
+					break;
+				case 4:
+					result=atof(text1)/atof(text2);
+					sprintf(str, "%f", result);
+					::MessageBox(hwnd,str,"Result",MB_OK);
+					break;	
+			}
+			
+
+			break;
+		}
 		/* Upon destruction, tell the main thread to stop */
 		case WM_DESTROY: {
 			PostQuitMessage(0);
@@ -29,23 +113,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.lpfnWndProc	 = WndProc; /* This is where we will send messages to */
 	wc.hInstance	 = hInstance;
 	wc.hCursor	 = LoadCursor(NULL, IDC_ARROW);
-	
+
+	HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
 	/* White, COLOR_WINDOW is just a #define for a system color, try Ctrl+Clicking it */
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+	wc.hbrBackground = (HBRUSH)(brush);
 	wc.lpszClassName = "WindowClass";
 	wc.hIcon	 = LoadIcon(NULL, IDI_APPLICATION); /* Load a standard icon */
 	wc.hIconSm	 = LoadIcon(NULL, IDI_APPLICATION); /* use the name "A" to use the project icon */
-
+	
 	if(!RegisterClassEx(&wc)) {
 		MessageBox(NULL, "Window Registration Failed!","Error!",MB_ICONEXCLAMATION|MB_OK);
 		return 0;
 	}
 
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,"WindowClass","Caption",WS_VISIBLE|WS_OVERLAPPEDWINDOW,
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,"WindowClass","My Calculator",WS_VISIBLE|WS_SYSMENU,
 		CW_USEDEFAULT, /* x */
 		CW_USEDEFAULT, /* y */
-		640, /* width */
-		480, /* height */
+		250, /* width */
+		200, /* height */
 		NULL,NULL,hInstance,NULL);
 
 	if(hwnd == NULL) {
